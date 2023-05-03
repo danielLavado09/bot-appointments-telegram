@@ -1,3 +1,6 @@
+from datetime import *
+
+
 class DBManager:
     def __init__(self, conn):
         self.conn = conn
@@ -59,12 +62,18 @@ class DBManager:
     def get_appointments(self, user_id):
         c = self.conn.cursor()
         c.execute(
-            "SELECT * FROM Appointments WHERE user_id=? ORDER BY date_due DESC", (user_id,))
+            '''SELECT specialty, date_due FROM Appointments WHERE user_id=? ORDER BY date_due''', (user_id,))
         results = c.fetchall()
+        today = datetime.now().date()
+        dates = []
 
-        appointments = [result[4] for result in results if not result[3]]
+        # Obtiene las citas de hoy o días posteriores
+        for result in results:
+            date_due = datetime.strptime(result[1], '%Y-%m-%d').date()
+            if date_due >= today:
+                dates.append((result[0], result[1]))
 
-        return appointments
+        return dates
 
     def get_user_name(self, user_id):
         c = self.conn.cursor()

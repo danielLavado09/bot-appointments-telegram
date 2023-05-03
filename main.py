@@ -1,9 +1,10 @@
-#from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater
 import sqlite3
 from DBManager import DBManager
 from RegisterHandler import RegisterHandler
 from AppointmentHandler import AppointmentHandler
+from StartHandler import StartHandler
+from ListAppointmentsHandler import ListAppointmentsHandler
 
 
 def main():
@@ -20,11 +21,17 @@ def main():
     db_manager.create_appointments_table()
     db_manager.create_doctors_table()
 
+    # Conversación de inicio
+    StartHandler(dispatcher, db_manager)
+
     # Conversación de registro
     RegisterHandler(dispatcher, db_manager)
 
     # Conversación de cita
     AppointmentHandler(dispatcher, db_manager)
+
+    # Conversación lista de citas usuario
+    ListAppointmentsHandler(dispatcher, db_manager)
 
     # Iniciar el bot
     updater.start_polling()
